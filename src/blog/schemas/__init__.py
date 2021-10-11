@@ -1,4 +1,9 @@
 from .posts import (
     Post,
-    CreatePost
+    CreatePost,
+)
+from .auth import (
+    User,
+    UserCreate,
+    Token
 )

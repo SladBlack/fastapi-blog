@@ -18,6 +18,10 @@ class Settings(BaseSettings):
 
     database_url: str = f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
+    jwt_secret: str = os.environ.get('JWT_SECRET')
+    jwt_algorithm: str = 'HS256'
+    jwt_expiration: int = 3600
+
 
 settings = Settings(
     _env_file='.env',
