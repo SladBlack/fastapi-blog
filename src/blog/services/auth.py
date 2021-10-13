@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends, Response
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.hash import bcrypt
@@ -10,8 +10,9 @@ from ..schemas import User, Token, UserCreate
 from ..settings import settings
 from .. import models
 from ..database import get_session
+from ..api.utils import OAuth2PasswordBearerWithCookie
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/sign-in")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/sign-in")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -49,7 +50,6 @@ class AuthService:
             user = User.parse_obj(user_data)
         except ValueError:
             raise credentials_exception
-
         return user
 
     @classmethod

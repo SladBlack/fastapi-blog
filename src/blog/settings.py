@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     jwt_secret: str = os.environ.get('JWT_SECRET')
     jwt_algorithm: str = 'HS256'
-    jwt_expiration: int = 3600
+    jwt_expiration: int = 3600 * 20
 
 
 settings = Settings(
