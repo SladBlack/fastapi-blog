@@ -1,14 +1,14 @@
 from datetime import timedelta
 
-from fastapi import Depends, FastAPI, APIRouter, Request, HTTPException, Response, status, Form
+from fastapi import Depends, FastAPI, APIRouter, Request, HTTPException, Response, status, Form, responses
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
 
 from ..schemas import UserCreate, User, Token
 from ..services.auth import AuthService, get_current_user
-from .forms import LoginForm
+from .forms import LoginForm, UserCreateForm
 from ..services.auth import AuthService
 from ..settings import settings
 from .utils import OAuth2PasswordBearerWithCookie
@@ -17,28 +17,9 @@ router = APIRouter(prefix='/auth')
 templates = Jinja2Templates(directory="src/blog/api/templates")
 
 
-@router.post('/sign-up', response_model=Token)
-def sign_up(user_data: UserCreate, service: AuthService = Depends()):
-    return service.register_new_user(user_data)
-
-
-# @router.post('/sign-in', response_model=Token)
-# def sign_in(form_data: OAuth2PasswordRequestForm = Depends(),
-#             service: AuthService = Depends()):
-#     return service.authenticate_user(form_data.username,
-#                                      form_data.password)
-
-
-@router.get('/user', response_model=User)
-def get_user(user: User = Depends(get_current_user)):
-    return user
-
-
 @router.get("/sign-in")
 def login(request: Request):
     return templates.TemplateResponse("auth/login.html", {"request": request})
-
-
 
 
 @router.post("/sign-in")
@@ -53,7 +34,28 @@ def login(request: Request, response: Response, auth_service: AuthService = Depe
         return {'status': 'bad'}
 
 
-@router.get('/cookie-test')
-def set_cookie(response: Response):
-    response.set_cookie(key='aboba', value='asdasdsa')
+@router.get("/register/")
+def register(request: Request):
+    return templates.TemplateResponse("auth/register.html", {"request": request})
+
+
+@router.post("/register/")
+async def register(request: Request, auth_service: AuthService = Depends()):
+    form = UserCreateForm(request)
+    await form.load_data()
+    if await form.is_valid():
+        try:
+            auth_service.register_new_user(email=form.email, username=form.username, password=form.password)
+            return responses.RedirectResponse(
+                "/?msg=Регистрация прошла успешно", status_code=status.HTTP_302_FOUND
+            )
+        except IntegrityError:
+            form.__dict__.get("errors").append("Duplicate username or email")
+            return templates.TemplateResponse("auth/register.html", form.__dict__)
+    return templates.TemplateResponse("auth/register.html", form.__dict__)
+
+
+@router.get("/logout")
+def logout(response: Response, auth_service: AuthService = Depends()):
+    auth_service.logout(response)
     return {'status': 'ok'}

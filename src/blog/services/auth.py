@@ -74,11 +74,11 @@ class AuthService:
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
 
-    def register_new_user(self, user_data: UserCreate) -> Token:
+    def register_new_user(self, email: str, username: str, password: str) -> Token:
         user = models.User(
-            email=user_data.email,
-            username=user_data.username,
-            password_hash=self.hash_password(user_data.password),
+            email=email,
+            username=username,
+            password_hash=self.hash_password(password),
         )
         self.session.add(user)
         self.session.commit()
@@ -101,3 +101,6 @@ class AuthService:
             raise exception
 
         return self.create_token(user)
+
+    def logout(self, response: Response):
+        response.delete_cookie('access_token')
