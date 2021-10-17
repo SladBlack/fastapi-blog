@@ -18,3 +18,7 @@ class Post(BaseModel):
 
 class CreatePost(PostBase):
     pass
+
+
+class Comment(BaseModel):
+    body: str

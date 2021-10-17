@@ -6,7 +6,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from ..database import get_session
-from ..models import Post
+from ..models import Post, Comment
 from ..schemas import CreatePost
 
 
@@ -39,3 +39,18 @@ class PostService:
         self.session.delete(post)
         self.session.commit()
 
+    def update_post(self, post_id: int, form):
+        post = self.get_post(post_id)
+        post.title = form.get('title')
+        post.body = form.get('body')
+        self.session.commit()
+
+    def create_comment(self, post_id: int, body: str, user_id: int):
+        comment = Comment(user_id=user_id,
+                          body=body,
+                          post_id=post_id)
+        self.session.add(comment)
+        self.session.commit()
+
+    def get_comments(self, post_id):
+        return self.session.query(Comment).filter(Post.id == post_id)

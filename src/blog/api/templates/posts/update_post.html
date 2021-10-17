@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h5 class="display-5">Редактировать пост</h5>
+        <div class="text-danger font-weight-bold">
+            {% for error in errors %}
+            <li>{{error}}</li>
+            {% endfor %}
+        </div>
+
+        <div class="text-success font-weight-bold">
+            {% if msg %}
+            <div class="badge bg-success text-wrap font-weight-bold" style="font-size: large;">
+                {{msg}}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <div class="row my-5">
+        <form method="POST" action="/update_post/{{ post.id }}">
+            <div class="mb-3">
+                <label>Title</label>
+                <input type="text" required placeholder="Заголовок" name="title" value="{{post.title}}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Содержание</label>
+                <textarea name="body" id="body" cols="30" rows="10"
+                          required placeholder="Введите текст поста" class="form-control">{{ post.body }}</textarea>
+            </div>
+            <input type="submit" value="Редактировать"/>
+        </form>
+    </div>
+</div>
+{% endblock %}

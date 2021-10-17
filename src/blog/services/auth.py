@@ -102,5 +102,6 @@ class AuthService:
 
         return self.create_token(user)
 
-    def logout(self, response: Response):
+    @staticmethod
+    def logout(response: Response):
         response.delete_cookie('access_token')

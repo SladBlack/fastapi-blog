@@ -5,8 +5,27 @@
     <div class="row">
         <h5 class="display-5">{{ post.title }}</h5>
         <p>{{ post.body }}</p>
-        <p>{{ post.created_at }}</p>
-        <p>Автор: </p>
+        <p>Дата публикации: {{ post.created_at.strftime('%Y-%m-%d %H:%m') }}</p>
+        <p>Автор: {{ post.user.username }}</p>
+
+        <h4>Комментарии:</h4>
+        {% for comment in comments %}
+        <p>{{ comment.user.username }}</p>
+        <p>{{ comment.body }}</p>
+        {% endfor %}
+
+        <h5>Оставить комментарий</h5>
+        <div class="row my-5">
+            <form method="POST" action="/{{post.id}}/">
+                <div class="mb-3">
+                    <label>Title</label>
+                    <input type="text" required placeholder="Текст комментария" name="body" class="form-control">
+                </div>
+                <input type="submit" value="Оставить комментарий"/>
+            </form>
+        </div>
     </div>
 </div>
+
+
 {% endblock %}
