@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from . import api
 # from .database import Base, engine
@@ -7,3 +8,4 @@ from . import api
 
 app = FastAPI()
 app.include_router(api.router)
+app.mount("/static", StaticFiles(directory="src/blog/static"), name="static")

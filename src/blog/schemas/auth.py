@@ -14,6 +14,7 @@ class UserCreate(BaseUser):
 
 class User(BaseUser):
     id: int
+    is_superuser: bool
 
     class Config:
         orm_mode = True
@@ -22,4 +23,7 @@ class User(BaseUser):
 class Token(BaseModel):
     access_token: str
     token_type: str = 'bearer'
-    
+
+
+class UserProfile(BaseUser):
+    is_superuser: str

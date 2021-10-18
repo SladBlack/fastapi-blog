@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h5 class="display-5">Личный кабинет</h5>
+        <p>Ваше имя: {{ user.username }}</p>
+        <table border="1">
+            <caption>Список пользователей</caption>
+            <tr>
+                <th>id</th>
+                <th>Имя пользователя</th>
+                <th>Почта</th>
+                <th>Админ</th>
+                <th>Забанен</th>
+                <th>Действие</th>
+            </tr>
+            {% if user.is_superuser %}
+            {% for usr in users %}
+            <tr>
+                <td>{{ usr.id }}</td>
+                <td>{{ usr.username }}</td>
+                <td>{{ usr.email }}</td>
+                <td>{{ usr.is_superuser }}</td>
+                <td>{{ usr.is_banned }}</td>
+                <td>
+                    {% if usr.is_banned %}
+                    <form action="/unblock_user/{{ usr.id }}" method="POST">
+                        <input type="submit" value="Разбанить"/>
+                    </form>
+                    {% else %}
+                    <form action="/block_user/{{ usr.id }}" method="POST">
+                        <input type="submit" value="Забанить"/>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+
+
+            {% endfor %}
+        </table>
+        {% else %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% with msg=msg %}
+{% include "components/alerts.html" %}
+{% endwith %}

@@ -5,5 +5,6 @@ from .posts import (
 from .auth import (
     User,
     UserCreate,
-    Token
+    Token,
+    UserProfile
 )

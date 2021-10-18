@@ -53,4 +53,14 @@ class PostService:
         self.session.commit()
 
     def get_comments(self, post_id):
-        return self.session.query(Comment).filter(Post.id == post_id)
+        return self.session.query(Comment).filter(Comment.post_id == post_id)
+
+    def delete_comment(self, comment_id: int) -> None:
+        comment = self.session.query(Comment).filter(Comment.id == comment_id).first()
+        self.session.delete(comment)
+        self.session.commit()
+
+    def like_post(self, post_id):
+        post = self.session.query(Post.id == post_id)
+        post.like_count += 1
+        self.session.commit()

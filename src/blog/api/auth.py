@@ -14,7 +14,7 @@ from ..settings import settings
 from .utils import OAuth2PasswordBearerWithCookie
 
 router = APIRouter(prefix='/auth')
-templates = Jinja2Templates(directory="src/blog/api/templates")
+templates = Jinja2Templates(directory="src/blog/templates")
 
 
 @router.get("/sign-in")

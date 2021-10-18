@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h5 class="display-5" align="center">{{ post.title }}</h5>
+        <div class="col-lg-4 post_info">
+            <p>Автор: {{ post.user.username }}</p>
+            <p>Дата публикации: {{ post.created_at.strftime('%Y-%m-%d %H:%m') }}</p>
+        </div>
+
+        <p class="mb-4">{{ post.body }}</p>
+
+        <div class="col-lg-7">
+            <h4>Комментарии:</h4>
+            {% for comment in comments %}
+            <div class="comment">
+                <h6>{{ comment.user.username }}</h6>
+                <p>{{ comment.body }}</p>
+                <p class="comment_info">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% if comment.user.id == user.id or user.is_superuser %}
+                <form action="/{{ comment.id }}/delete_comment" method="POST">
+                    <input type="submit" value="Удалить"/>
+                </form>
+                {% else %}
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <h5 class="mt-4">Оставить комментарий</h5>
+            <form method="POST" action="/{{post.id}}/">
+                <div class="mb-3">
+                    <textarea name="body" id="body" cols="10" rows="5" placeholder="Текст комментария"
+                              class="form-control" required></textarea>
+                </div>
+                <input type="submit" value="Оставить комментарий"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% with msg=msg %}
+{% include "components/alerts.html" %}
+{% endwith %}

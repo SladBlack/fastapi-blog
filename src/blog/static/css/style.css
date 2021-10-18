@@ -1,0 +1,28 @@
+.post{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-top: 40px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.post_info{
+    font-size: 15px;
+    margin: 0px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.comment{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 4px;
+    margin: 15px;
+}
+
+.comment_info{
+    font-size: 15px;
+}
