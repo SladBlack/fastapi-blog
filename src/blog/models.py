@@ -1,7 +1,9 @@
+import uuid
 from datetime import datetime
 
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import UUID
 
 from .database import Base
 
@@ -30,6 +32,7 @@ class Post(Base):
     like_count = sa.Column(sa.Integer, default=0)
 
     comments = relationship("Comment", backref="post")
+    likes = relationship("Like", backref="post")
 
     def __repr__(self):
         return self.title
@@ -45,3 +48,23 @@ class Comment(Base):
 
     def __repr__(self):
         return self.user_id
+
+
+class Like(Base):
+    __tablename__ = 'likes'
+    id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
+    post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
+
+
+# class PostView(Base):
+#     __tablename__ = 'post_info'
+#     id = sa.Column(sa.Integer, primary_key=True)
+#     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
+#     post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
+
+# class Like(Base):
+#     __tablename__ = 'likes'
+#     id = sa.Column(sa.Integer, primary_key=True)
+#     post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
+#     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))

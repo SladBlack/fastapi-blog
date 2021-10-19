@@ -11,6 +11,10 @@
 
         <p class="mb-4">{{ post.body }}</p>
 
+        <form action="/{{ post.id }}/like" method="POST">
+            <input type="submit" value="Мне нравится"/>
+        </form>
+
         <div class="col-lg-7">
             <h4>Комментарии:</h4>
             {% for comment in comments %}
@@ -26,6 +30,7 @@
                 {% endif %}
             </div>
             {% endfor %}
+
 
             <h5 class="mt-4">Оставить комментарий</h5>
             <form method="POST" action="/{{post.id}}/">

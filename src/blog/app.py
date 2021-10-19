@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from . import api
-# from .database import Base, engine
-#
-# Base.metadata.create_all(engine)
+from .database import Base, engine
+
+Base.metadata.create_all(engine)
 
 app = FastAPI()
 app.include_router(api.router)

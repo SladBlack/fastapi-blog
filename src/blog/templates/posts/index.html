@@ -21,7 +21,7 @@
     <div class="row">
         <div class="post">
             <h3>{{ post.title }}</h3>
-            <p>Дата публикации: {{ post.created_at.strftime('%Y-%m-%d %H:%m') }}</p>
+            <p class="post_info">Дата публикации: {{ post.created_at.strftime('%Y-%m-%d %H:%m') }}</p>
             <a href="/{{ post.id }}">Посмотреть полностью</a>
             {% if post.user_id == user.id %}
             <a href="/update/{{ post.id }}">Редактировать</a>
@@ -30,6 +30,22 @@
             </form>
             {% else %}
             {% endif %}
+
+            {% if user %}
+            <form action="/{{ post.id }}/like" method="POST">
+                {% if post.likes.post_id == post.id %}
+                <input type="submit" value="Мне нравится"/>
+                {% else %}
+                <input type="submit" value="Мне не нравится"/>
+                {% endif %}
+            </form>
+            {% endif %}
+
+            <div class="post_info">
+                <p>Отметок "Мне нравится": {{ post.likes|length }}</p>
+                <p>Просмотров: {{ post.view_count }}</p>
+            </div>
+
         </div>
     </div>
 </div>

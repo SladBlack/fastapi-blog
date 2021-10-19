@@ -120,3 +120,12 @@ def delete_post(request: Request, post_id: int, post_service: PostService = Depe
 def delete_comment(comment_id: int, post_service: PostService = Depends()):
     post_service.delete_comment(comment_id=comment_id)
     return responses.RedirectResponse(f"/?msg=Комментарий удален", status_code=status.HTTP_302_FOUND)
+
+
+@router.post('/{post_id}/like')
+def like_post(request: Request, post_id: int, post_service: PostService = Depends()):
+    token = request.cookies.get('access_token')
+    if token:
+        user = get_current_user(token=token)
+        post_service.like_post(post_id=post_id, user_id=user.id)
+    return responses.RedirectResponse(f"/?msg=Лайк поставлен", status_code=status.HTTP_302_FOUND)

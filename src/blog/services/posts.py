@@ -6,7 +6,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from ..database import get_session
-from ..models import Post, Comment
+from ..models import Post, Comment, Like
 from ..schemas import CreatePost
 
 
@@ -60,7 +60,11 @@ class PostService:
         self.session.delete(comment)
         self.session.commit()
 
-    def like_post(self, post_id):
-        post = self.session.query(Post.id == post_id)
-        post.like_count += 1
+    def like_post(self, post_id, user_id):
+        like = self.session.query(Like).filter(Like.user_id == user_id, Like.post_id == post_id)
+        if not like.first():
+            like = Like(post_id=post_id, user_id=user_id)
+            self.session.add(like)
+        else:
+            like.delete()
         self.session.commit()
