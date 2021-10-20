@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -18,13 +20,16 @@ router = APIRouter()
 
 
 @router.get('/', response_class=HTMLResponse)
-def index(request: Request, post_service: PostService = Depends(), msg: str = None):
+def index(request: Request, post_service: PostService = Depends(), msg: str = None,
+          sort: Optional[str] = None):
     posts = post_service.get_posts()
     token = request.cookies.get('access_token')
     if token:
         user = get_current_user(token=token)
     else:
         user = None
+    if sort:
+        posts = post_service.sort(sort=sort)
     return templates.TemplateResponse('posts/index.html', {'request': request,
                                                            'posts': posts,
                                                            'msg': msg,
@@ -43,11 +48,6 @@ def post_detail(request: Request, post_id: int, post_service: PostService = Depe
 
     form = CommentCreateForm(request)
     comments = post_service.get_comments(post_id=post_id)
-    token = request.cookies.get('access_token')
-    if token:
-        user = get_current_user(token=token)
-    else:
-        user = None
     return templates.TemplateResponse('posts/detail_post.html', {'request': request,
                                                                  'post': post,
                                                                  'comment_form': form,

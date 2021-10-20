@@ -6,10 +6,10 @@ from fastapi import (
     status,
 )
 from sqlalchemy.orm import Session
+from sqlalchemy import desc, func
 
 from ..database import get_session
 from ..models import Post, Comment, Like, View
-from ..schemas import CreatePost
 
 
 class PostService:
@@ -83,3 +83,36 @@ class PostService:
             msg = 'Лайк удален'
         self.session.commit()
         return msg
+
+    def sort(self, sort: str):
+        if sort == 'by_newest_date':
+            return self._sort_by_newest_date()
+        elif sort == 'by_oldest_date':
+            return self._sort_by_oldest_date()
+        elif sort == 'by_popular':
+            return self._sort_by_popular()
+        elif sort == 'by_views':
+            return self._sort_by_views()
+
+    def _get_query_post(self):
+        return self.session.query(Post)
+
+    def _sort_by_newest_date(self):
+        return self._get_query_post().order_by(desc(Post.created_at))
+
+    def _sort_by_oldest_date(self):
+        return self._get_query_post().order_by(Post.created_at)
+
+    def _sort_by_popular(self):
+        return self.session.query(Post, ) \
+            .join(Like, isouter=True) \
+            .group_by(Post.id) \
+            .order_by(desc(func.count(Like.user_id))) \
+            .all()
+
+    def _sort_by_views(self):
+        return self.session.query(Post) \
+            .join(View, isouter=True) \
+            .group_by(Post.id) \
+            .order_by(desc(func.count(View.id))) \
+            .all()

@@ -15,10 +15,21 @@
     </nav>
 </div>
 
-
-{% for post in posts %}
 <div class="container">
     <div class="row">
+        <form action="" method="GET" class="d-flex mt-3">
+            <select size="1" name="sort">
+                <option disabled selected>Сортировка по:</option>
+                <option value="by_newest_date">Дате (сначала самые новые)</option>
+                <option value="by_oldest_date">Дате (сначала самые старые)</option>
+                <option value="by_popular">По кол-ву лайков</option>
+                <option value="by_views">По кол-ву просмотров</option>
+            </select>
+            <input type="submit" value="Отсортировать">
+        </form>
+
+
+        {% for post in posts %}
         <div class="post">
             <h3>{{ post.title }}</h3>
             <p class="post_info">Дата публикации: {{ post.created_at.strftime('%Y-%m-%d %H:%m') }}</p>
@@ -41,13 +52,10 @@
                 <p>Отметок "Мне нравится": {{ post.likes|length }}</p>
                 <p>Просмотров: {{ post.views|length }}</p>
             </div>
-
         </div>
+        {% endfor %}
     </div>
 </div>
-
-{% endfor %}
-
 {% endblock %}
 
 
