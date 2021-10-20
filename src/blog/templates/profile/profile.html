@@ -5,6 +5,8 @@
     <div class="row">
         <h5 class="display-5">Личный кабинет</h5>
         <p>Ваше имя: {{ user.username }}</p>
+
+        {% if user.is_superuser %}
         <table border="1">
             <caption>Список пользователей</caption>
             <tr>
@@ -15,7 +17,6 @@
                 <th>Забанен</th>
                 <th>Действие</th>
             </tr>
-            {% if user.is_superuser %}
             {% for usr in users %}
             <tr>
                 <td>{{ usr.id }}</td>
@@ -35,8 +36,6 @@
                     {% endif %}
                 </td>
             </tr>
-
-
             {% endfor %}
         </table>
         {% else %}

@@ -2,7 +2,6 @@ from fastapi import (
     APIRouter,
     Depends,
     Request,
-    HTTPException,
     responses,
     status
 )
@@ -12,7 +11,7 @@ from fastapi.responses import HTMLResponse
 from ..services.posts import PostService
 from ..services.auth import get_current_user
 from .forms import PostForm, CommentCreateForm
-from ..schemas import User, Token
+from ..schemas import User
 
 templates = Jinja2Templates(directory="src/blog/templates/")
 router = APIRouter()
