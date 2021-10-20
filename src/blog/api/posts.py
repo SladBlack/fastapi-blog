@@ -34,7 +34,14 @@ def index(request: Request, post_service: PostService = Depends(), msg: str = No
 
 @router.get('/{post_id}/')
 def post_detail(request: Request, post_id: int, post_service: PostService = Depends(), msg: str = None):
-    post = post_service.get_post(post_id=post_id)
+    token = request.cookies.get('access_token')
+    if token:
+        user = get_current_user(token=token)
+        post = post_service.get_detail_post(post_id=post_id, user_id=user.id)
+    else:
+        user = None
+        post = post_service.get_detail_post(post_id=post_id, user_id=None)
+
     form = CommentCreateForm(request)
     comments = post_service.get_comments(post_id=post_id)
     token = request.cookies.get('access_token')
@@ -59,8 +66,8 @@ async def post_detail(request: Request, post_id: int, post_service: PostService 
         current_user = get_current_user(token=token)
         post_service.create_comment(body=form.body, user_id=current_user.id, post_id=post_id)
         return responses.RedirectResponse(f"/{post_id}/?msg=Комментарий оставлен", status_code=status.HTTP_302_FOUND)
-    except Exception as e:
-        return responses.RedirectResponse(f"/{post_id}/?msg={e}", status_code=status.HTTP_302_FOUND)
+    except AttributeError:
+        return responses.RedirectResponse(f"/{post_id}/?msg=Вы не авторизованы", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/create_post")
@@ -127,5 +134,7 @@ def like_post(request: Request, post_id: int, post_service: PostService = Depend
     token = request.cookies.get('access_token')
     if token:
         user = get_current_user(token=token)
-        post_service.like_post(post_id=post_id, user_id=user.id)
-    return responses.RedirectResponse(f"/?msg=Лайк поставлен", status_code=status.HTTP_302_FOUND)
+        msg = post_service.like_post(post_id=post_id, user_id=user.id)
+    else:
+        msg = 'Авторизуйтесь, чтобы поставить лайк'
+    return responses.RedirectResponse(f"/?msg={msg}", status_code=status.HTTP_302_FOUND)

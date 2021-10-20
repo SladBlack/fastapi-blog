@@ -33,6 +33,7 @@ class Post(Base):
 
     comments = relationship("Comment", backref="post")
     likes = relationship("Like", backref="post")
+    views = relationship("View", backref="post")
 
     def __repr__(self):
         return self.title
@@ -57,14 +58,8 @@ class Like(Base):
     post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
 
 
-# class PostView(Base):
-#     __tablename__ = 'post_info'
-#     id = sa.Column(sa.Integer, primary_key=True)
-#     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
-#     post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
-
-# class Like(Base):
-#     __tablename__ = 'likes'
-#     id = sa.Column(sa.Integer, primary_key=True)
-#     post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
-#     user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
+class View(Base):
+    __tablename__ = 'views'
+    id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('users.id'))
+    post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))

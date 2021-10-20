@@ -33,17 +33,13 @@
 
             {% if user %}
             <form action="/{{ post.id }}/like" method="POST">
-                {% if post.likes.post_id == post.id %}
                 <input type="submit" value="Мне нравится"/>
-                {% else %}
-                <input type="submit" value="Мне не нравится"/>
-                {% endif %}
             </form>
             {% endif %}
 
             <div class="post_info">
                 <p>Отметок "Мне нравится": {{ post.likes|length }}</p>
-                <p>Просмотров: {{ post.view_count }}</p>
+                <p>Просмотров: {{ post.views|length }}</p>
             </div>
 
         </div>

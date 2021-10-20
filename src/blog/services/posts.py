@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import (
     Depends,
     HTTPException,
@@ -6,7 +8,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from ..database import get_session
-from ..models import Post, Comment, Like
+from ..models import Post, Comment, Like, View
 from ..schemas import CreatePost
 
 
@@ -18,6 +20,16 @@ class PostService:
         post = self.session.query(Post).filter(Post.id == post_id).first()
         if not post:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
+        return post
+
+    def get_detail_post(self, post_id: int, user_id: Optional[int] = None):
+        post = self.get_post(post_id=post_id)
+        if user_id:
+            view = self.session.query(View).filter(View.post_id == post_id, View.user_id == user_id).first()
+            if not view:
+                view = View(user_id=user_id, post_id=post_id)
+                self.session.add(view)
+                self.session.commit()
         return post
 
     def get_posts(self):
@@ -60,11 +72,14 @@ class PostService:
         self.session.delete(comment)
         self.session.commit()
 
-    def like_post(self, post_id, user_id):
+    def like_post(self, post_id, user_id) -> str:
         like = self.session.query(Like).filter(Like.user_id == user_id, Like.post_id == post_id)
         if not like.first():
             like = Like(post_id=post_id, user_id=user_id)
             self.session.add(like)
+            msg = 'Лайк поставлен'
         else:
             like.delete()
+            msg = 'Лайк удален'
         self.session.commit()
+        return msg
