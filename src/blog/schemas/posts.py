@@ -21,4 +21,5 @@ class CreatePost(PostBase):
 
 
 class Comment(BaseModel):
+    user_id: int
     body: str

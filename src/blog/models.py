@@ -34,6 +34,7 @@ class Post(Base):
     comments = relationship("Comment", backref="post")
     likes = relationship("Like", backref="post")
     views = relationship("View", backref="post")
+    users = relationship("User", backref="post")
 
     def __repr__(self):
         return self.title
@@ -46,9 +47,6 @@ class Comment(Base):
     post_id = sa.Column(sa.Integer, sa.ForeignKey('posts.id'))
     created_at = sa.Column(sa.DateTime, default=datetime.utcnow)
     body = sa.Column(sa.String)
-
-    def __repr__(self):
-        return self.user_id
 
 
 class Like(Base):

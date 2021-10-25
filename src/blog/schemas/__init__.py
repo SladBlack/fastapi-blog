@@ -1,6 +1,7 @@
 from .posts import (
     Post,
     CreatePost,
+PostBase,
 )
 from .auth import (
     User,

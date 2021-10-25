@@ -11,9 +11,11 @@
 
         <p class="mb-4">{{ post.body }}</p>
 
+        {% if not user.is_banned %}
         <form action="/{{ post.id }}/like" method="POST">
             <input type="submit" value="Мне нравится"/>
         </form>
+        {% endif %}
 
         <div class="col-lg-7">
             <h4>Комментарии:</h4>
@@ -22,7 +24,7 @@
                 <h6>{{ comment.user.username }}</h6>
                 <p>{{ comment.body }}</p>
                 <p class="comment_info">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
-                {% if comment.user.id == user.id or user.is_superuser %}
+                {% if comment.user.id == user.id or user.is_superuser and not user.is_banned %}
                 <form action="/{{ comment.id }}/delete_comment" method="POST">
                     <input type="submit" value="Удалить"/>
                 </form>
@@ -33,6 +35,7 @@
 
 
             <h5 class="mt-4">Оставить комментарий</h5>
+            {% if not user.is_banned %}
             <form method="POST" action="/{{post.id}}/">
                 <div class="mb-3">
                     <textarea name="body" id="body" cols="10" rows="5" placeholder="Текст комментария"
@@ -40,6 +43,9 @@
                 </div>
                 <input type="submit" value="Оставить комментарий"/>
             </form>
+            {% else %}
+            <p>У вас нет возможности оставить комментарий</p>
+            {% endif %}
         </div>
     </div>
 </div>

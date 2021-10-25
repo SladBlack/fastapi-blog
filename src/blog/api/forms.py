@@ -39,16 +39,14 @@ class LoginForm:
         self.username: Optional[str] = None
         self.password: Optional[str] = None
 
-    def load_data(self):
-        form = self.request.form
-        self.username = form.get(
-            "username"
-        )  # since outh works on username field we are considering email as username
+    async def load_data(self):
+        form = await self.request.form()
+        self.username = form.get("username")
         self.password = form.get("password")
 
     def is_valid(self):
         if not self.username:
-            self.errors.append("Email is required")
+            self.errors.append("Email обязателен")
         if not self.password or not len(self.password) >= 4:
             self.errors.append("A valid password is required")
         if not self.errors:
@@ -70,7 +68,7 @@ class UserCreateForm:
         self.email = form.get("email")
         self.password = form.get("password")
 
-    async def is_valid(self):
+    def is_valid(self):
         if not self.username or not len(self.username) > 3:
             self.errors.append('Имя должно иметь больше трех символов')
         if not self.email or not (self.email.__contains__('@')):

@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
+from typing import Optional, Union
 
-from fastapi import HTTPException, status, Depends, Response
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import HTTPException, status, Depends, Response, Request
 from jose import jwt, JWTError
 from passlib.hash import bcrypt
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from ..schemas import User, Token, UserCreate
 from ..settings import settings
@@ -17,6 +19,13 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/sign-in")
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     return AuthService.validate_token(token)
+
+
+def get_user(request: Request) -> Union[User, None]:
+    token = request.cookies.get('access_token')
+    if not token:
+        return None
+    return get_current_user(token)
 
 
 class AuthService:
@@ -74,32 +83,31 @@ class AuthService:
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
 
-    def register_new_user(self, email: str, username: str, password: str) -> Token:
+    async def register_new_user(self, email: str, username: str, password: str) -> Token:
         user = models.User(
             email=email,
             username=username,
             password_hash=self.hash_password(password),
         )
         self.session.add(user)
-        self.session.commit()
+        try:
+            await self.session.commit()
+            return self.create_token(user)
+        except IntegrityError as ex:
+            print(ex)
+            await self.session.rollback()
 
-        return self.create_token(user)
-
-    def authenticate_user(self, username: str, password: str) -> Token:
+    async def authenticate_user(self, username: str, password: str) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-        user = (self.session.query(models.User).filter(models.User.username == username).first())
-
-        if not user:
-            raise exception
+        users = await self.session.execute(select(models.User).where(models.User.username == username))
+        user = users.scalars().first()
 
         if not self.verify_password(password, user.password_hash):
             raise exception
-
         return self.create_token(user)
 
     @staticmethod

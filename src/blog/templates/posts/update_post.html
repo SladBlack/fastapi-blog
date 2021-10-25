@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% for error in errors %}
+<li>{{error}}</li>
+{% endfor %}
+
 <div class="container">
     <div class="row">
         <h5 class="display-5">Редактировать пост</h5>
@@ -24,7 +29,8 @@
         <form method="POST" action="/update_post/{{ post.id }}">
             <div class="mb-3">
                 <label>Title</label>
-                <input type="text" required placeholder="Заголовок" name="title" value="{{post.title}}" class="form-control">
+                <input type="text" required placeholder="Заголовок" name="title" value="{{post.title}}"
+                       class="form-control">
             </div>
             <div class="mb-3">
                 <label>Содержание</label>
