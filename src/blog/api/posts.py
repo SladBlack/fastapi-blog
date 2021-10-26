@@ -66,7 +66,9 @@ async def post_detail(request: Request, post_id: int, post_service: PostService 
 
 
 @router.get("/create_post")
-def create_post(request: Request):
+def create_post(request: Request, user=Depends(get_user)):
+    if not user or user.is_banned:
+        return {'status': 'not logged or you are banned'}
     return templates.TemplateResponse("posts/create_post.html", {"request": request})
 
 

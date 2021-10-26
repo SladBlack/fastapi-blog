@@ -15,7 +15,7 @@ class ProfileService:
         return user.scalars().first()
 
     async def get_all_users(self):
-        users = await self.session.execute(select(User))
+        users = await self.session.execute(select(User).order_by(User.id))
         return users.scalars().all()
 
     async def block_user(self, user_id: int) -> None:

@@ -6,6 +6,7 @@ from fastapi import (
     status,
 )
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 from ..services.auth import get_user
 from ..services.profile import ProfileService
@@ -23,13 +24,13 @@ async def profile(request: Request, profile_service: ProfileService = Depends(),
                                                                'msg': msg})
 
 
-@router.post('/block_user/{user_id}')
+@router.post('/block_user/{user_id}', response_class=HTMLResponse)
 async def block_user(user_id: int, profile_service: ProfileService = Depends()):
     await profile_service.block_user(user_id=user_id)
-    return responses.RedirectResponse(f"/profile/?msg=Пользователь забанен", status_code=status.HTTP_302_FOUND)
+    return responses.RedirectResponse("/profile?msg=Пользователь забанен", status_code=status.HTTP_302_FOUND)
 
 
-@router.post('/unblock_user/{user_id}')
+@router.post('/unblock_user/{user_id}', response_class=HTMLResponse)
 async def unblock_user(user_id: int, profile_service: ProfileService = Depends()):
     await profile_service.unblock_user(user_id=user_id)
-    return responses.RedirectResponse(f"/profile/?msg=Пользователь разбанен", status_code=status.HTTP_302_FOUND)
+    return responses.RedirectResponse("/profile?msg=Пользователь разбанен", status_code=status.HTTP_302_FOUND)
